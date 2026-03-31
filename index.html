@@ -1259,15 +1259,60 @@ html,body{background:var(--white);color:var(--t1);font-family:'Inter',sans-serif
 .st-done-btn.completed{background:var(--green);color:var(--white)}
 
 /* REST TIMER POPUP */
-.rest-timer-popup{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:400;background:var(--navy);border-radius:16px;padding:12px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(0,0,0,.25);min-width:200px;justify-content:center;animation:slideUp .25s ease}
-@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.rt-label{font-size:9px;font-weight:500;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
-.rt-clock{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--white);letter-spacing:.04em;line-height:1;min-width:64px;text-align:center}
-.rt-btns{display:flex;gap:6px}
-.rt-btn{font-family:'Inter',sans-serif;font-size:10px;font-weight:500;color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 10px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.rt-btn:active{opacity:.7}
-.rt-btn.rt-stop{color:var(--white);background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
-.rt-dismiss{color:rgba(255,255,255,.4);font-size:16px;cursor:pointer;padding:2px 4px;line-height:1;flex-shrink:0}
+.rest-timer-popup{
+  position:fixed;
+  bottom:calc(58px + env(safe-area-inset-bottom));
+  left:0;right:0;
+  z-index:400;
+  background:var(--navy);
+  padding:20px 24px 22px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+  box-shadow:0 -4px 32px rgba(0,0,0,.3);
+  animation:slideUpFull .28s cubic-bezier(.2,.8,.4,1)
+}
+@keyframes slideUpFull{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+.rt-top-row{display:flex;align-items:center;justify-content:space-between;width:100%}
+.rt-label{font-size:9px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:.16em;text-transform:uppercase}
+.rt-dismiss{color:rgba(255,255,255,.35);font-size:22px;cursor:pointer;line-height:1;padding:2px 4px}
+.rt-dismiss:active{opacity:.6}
+.rt-clock{
+  font-family:'Cormorant Garamond',serif;
+  font-size:72px;
+  font-weight:400;
+  color:var(--white);
+  letter-spacing:.04em;
+  line-height:1;
+  text-align:center;
+  width:100%;
+}
+.rt-clock.rt-warning{color:#e8c05a}
+.rt-clock.rt-long{color:#e07060}
+.rt-btns{display:flex;gap:10px;width:100%}
+.rt-btn{
+  flex:1;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  color:rgba(255,255,255,.8);
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:var(--rsm);
+  padding:11px;
+  cursor:pointer;
+  transition:all .15s;
+  text-align:center;
+  letter-spacing:.03em;
+}
+.rt-btn:active{opacity:.7;transform:scale(.97)}
+.rt-btn.rt-stop{
+  color:var(--white);
+  background:rgba(255,255,255,.14);
+  border-color:rgba(255,255,255,.25);
+  font-weight:600;
+}
 
 /* SKIP BUTTON */
 .skip-btn{font-size:10px;padding:4px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--rule2);background:var(--white);color:var(--t3);font-family:'Inter',sans-serif;letter-spacing:.03em;transition:all .15s;white-space:nowrap;flex-shrink:0}
@@ -3067,10 +3112,6 @@ function setSkip(exId,setKey){
     row.parentNode.replaceChild(tmp.firstChild,row);
   }
   updateExHeader(exId);
-  // Trigger rest timer after logging a working set
-  if(setKey!=='wu' && w.value && r.value){
-    startRestTimer();
-  }
 }
 
 function setForm(exId,setKey,form){
@@ -3088,6 +3129,12 @@ function setForm(exId,setKey,form){
     });
   }
   updateExHeader(exId);
+  // Fire rest timer when Clean or Grind is tapped — true set complete signal
+  if(setKey!=='wu'){
+    var _w=document.getElementById(exId+'_'+setKey+'_w');
+    var _r=document.getElementById(exId+'_'+setKey+'_r');
+    if(_w&&_r&&_w.value&&_r.value){ startRestTimer(); }
+  }
 }
 
 function autoSave(exId,setKey){
@@ -3332,6 +3379,10 @@ function updateRestTimer(){
   if(!el){dismissRestTimer();return;}
   var secs=Math.floor((Date.now()-restStartTime)/1000);
   el.textContent=fmtTime(secs);
+  // Color shifts: 2min = amber warning, 3min+ = red
+  el.className='rt-clock';
+  if(secs>=180)el.classList.add('rt-long');
+  else if(secs>=120)el.classList.add('rt-warning');
 }
 
 function showRestPopup(){
@@ -3340,12 +3391,12 @@ function showRestPopup(){
   var popup=document.createElement('div');
   popup.className='rest-timer-popup';
   popup.id='restTimerPopup';
-  popup.innerHTML='<div><div class="rt-label">Rest</div><div class="rt-clock" id="restClock">0:00</div></div>'
+  popup.innerHTML='<div class="rt-top-row"><span class="rt-label">Rest</span><span class="rt-dismiss" onclick="p3.dismissRestTimer()">×</span></div>'
+    +'<div class="rt-clock" id="restClock">0:00</div>'
     +'<div class="rt-btns">'
     +'<button class="rt-btn rt-stop" onclick="p3.stopRestTimer()">Stop</button>'
     +'<button class="rt-btn" onclick="p3.startRestTimer()">Restart</button>'
-    +'</div>'
-    +'<span class="rt-dismiss" onclick="p3.dismissRestTimer()">×</span>';
+    +'</div>';
   document.body.appendChild(popup);
 }
 
