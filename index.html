@@ -2690,20 +2690,26 @@ function getOverloadSuggestion(exId,wk,day,ex){
 
   var ws1done=last.ws1&&last.ws1.reps>0&&last.ws1.form==='clean';
   var ws2done=last.ws2&&last.ws2.reps>0&&last.ws2.form==='clean';
-  var repRange=ex.rep.replace('AMRAP / ','').replace(' each','').replace(' each side','');
+  // ws3: only required if this exercise has 3 working sets
+  var needs3WS=(ex.sets||'').indexOf('3WS')>-1;
+  var ws3done=!needs3WS||(last.ws3&&last.ws3.reps>0&&last.ws3.form==='clean');
+  var allSetsClean=ws1done&&ws2done&&ws3done;
+
+  var repRange=ex.rep.replace('AMRAP / ','').replace(' each','').replace(' each side','').replace(' yards','').replace(' min','');
   var maxRep=parseInt(repRange.split('–')[1]||repRange)||10;
   var ws1maxed=last.ws1&&last.ws1.reps>=maxRep;
   var ws2maxed=last.ws2&&last.ws2.reps>=maxRep;
+  var ws3maxed=!needs3WS||(last.ws3&&last.ws3.reps>=maxRep);
 
-  if(ws1done&&ws2done&&ws3done&&ws1maxed&&ws2maxed){
+  if(allSetsClean&&ws1maxed&&ws2maxed&&ws3maxed){
     var addWeight=ex.carry?0:2.5;
-    return{type:'progress',msg:'Both sets complete at full range with clean form. Add '+addWeight+'lb this session — or attempt +1 rep if weight jumps are not available.'};
+    return{type:'progress',msg:'All sets complete at full range with clean form. Add '+addWeight+'lb this session — or +1 rep if weight jumps are not available.'};
   }
-  if(ws1done&&ws2done&&ws3done&&!ws1maxed){
-    return{type:'same',msg:'Both sets complete but below the rep ceiling. Same weight this session — chase the top of the rep range before adding load.'};
+  if(allSetsClean&&!ws1maxed){
+    return{type:'same',msg:'All sets complete but below the rep ceiling. Same weight this session — chase the top of the rep range before adding load.'};
   }
-  if(!ws1done||!ws2done){
-    return{type:'same',msg:'One or both sets did not complete clean last week. Hold the weight. Form and completion come before load.'};
+  if(!ws1done||!ws2done||(needs3WS&&!ws3done)){
+    return{type:'same',msg:'One or more sets did not complete clean last week. Hold the weight. Form and completion come before load.'};
   }
   return{type:'same',msg:'Same weight this session. Log it clean and next week will open the next level.'};
 }
@@ -2834,7 +2840,7 @@ function renderMain(){
   // ── CARDIO ──
   if(info.cardio){
     var sectC=document.createElement('div');
-    sectC.innerHTML='<div class="slabel"><span class="snum">'+(parseInt(snum)+1)+'</span><span class="stxt">Cardio</span><div class="srule"></div></div>';
+    sectC.innerHTML='<div class="slabel"><span class="snum">III</span><span class="stxt">Cardio</span><div class="srule"></div></div>';
     ms.appendChild(sectC);
     ms.appendChild(buildCardioCard(info.cardio,wk,day));
   }
