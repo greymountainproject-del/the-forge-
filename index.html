@@ -2869,6 +2869,46 @@ function renderMain(){
   renderFooter(ms);
 }
 
+// ── HINT ENGINE — double progression model ────────────────
+// Rule: chase top of rep range first, then add 2.5lb and reset to bottom of range
+function computeHint(setKey, lastData, suggestion, ex) {
+  if (!lastData) return null;
+  var last = lastData[setKey];
+  if (!last || !last.weight) return null;
+
+  var lastWeight = parseFloat(last.weight) || 0;
+  var lastReps   = parseInt(last.reps)     || 0;
+  if (!lastWeight) return null;
+
+  // Parse rep range e.g. "6-10", "8-12 each", "4-8"
+  var repStr = (ex.rep || '').replace(/[^0-9–\-]/g, '');
+  var sep    = repStr.indexOf('–') > -1 ? '–' : '-';
+  var parts  = repStr.split(sep);
+  var minRep = parseInt(parts[0]) || lastReps;
+  var maxRep = parseInt(parts[1] || parts[0]) || lastReps;
+
+  // Carries and warm-ups: just echo last
+  if (ex.carry || ex.warmup || setKey === 'wu') {
+    return { weight: lastWeight, reps: lastReps, note: '' };
+  }
+
+  var sugWeight, sugReps, note;
+
+  if (lastReps >= maxRep) {
+    // At ceiling — add 2.5lb, reset to bottom of rep range
+    sugWeight = Math.round((lastWeight + 2.5) * 4) / 4;
+    sugReps   = minRep;
+    note      = '+2.5lb';
+  } else {
+    // Below ceiling — same weight, +1 rep
+    sugWeight = lastWeight;
+    sugReps   = lastReps + 1;
+    note      = '+1 rep';
+  }
+
+  return { weight: sugWeight, reps: sugReps, note: note };
+}
+
 function buildExerciseCard(ex,wk,day,isDeload){
   var card=document.createElement('div');
   card.className='ex-card';
@@ -2910,32 +2950,40 @@ var allDone=wuDone&&ws1Done&&ws2Done&&ws3Done2;
     // Sets
     +'<div class="set-label-row"><span class="set-section-label">Log sets</span>'+(lwRef?'<span class="last-week-label">⇦ '+lwRef+'</span>':'<span class="last-week-label" style="color:var(--t4);font-style:italic">First session</span>')+'</div>'
     +(ex.warmup?'<div style="font-size:12px;color:var(--t3);padding:8px 0;font-style:italic">Log in notes if needed — this is prep, not a working set.</div>':
-      buildSetRow(ex.id,'wu','WU',exData.wu,isDeload)
-      +buildSetRow(ex.id,'ws1','WS1',exData.ws1,isDeload)
-      +(isDeload?'':buildSetRow(ex.id,'ws2','WS2',exData.ws2,isDeload))
-      +(!isDeload&&(ex.sets||'1WU+3WS').indexOf('3WS')>-1?buildSetRow(ex.id,'ws3','WS3',exData.ws3,isDeload):''))
+      buildSetRow(ex.id,'wu','WU',exData.wu,isDeload,computeHint('wu',lastData,suggestion,ex))
+      +buildSetRow(ex.id,'ws1','WS1',exData.ws1,isDeload,computeHint('ws1',lastData,suggestion,ex))
+      +(isDeload?'':buildSetRow(ex.id,'ws2','WS2',exData.ws2,isDeload,computeHint('ws2',lastData,suggestion,ex)))
+      +(!isDeload&&(ex.sets||'1WU+3WS').indexOf('3WS')>-1?buildSetRow(ex.id,'ws3','WS3',exData.ws3,isDeload,computeHint('ws3',lastData,suggestion,ex)):''))
     +'</div>';
 
   return card;
 }
 
-function buildSetRow(exId,setKey,tag,data,isDeload){
+function buildSetRow(exId,setKey,tag,data,isDeload,hint){
   var tagCls=setKey==='wu'?'tag-wu':'tag-ws';
   var formVal=data?data.form:'';
   var isSkipped=data&&data.skipped;
   var rowCls='set-row'+(isSkipped?' skipped':'');
+  var hasWeight=data&&data.weight;
+  var hasReps=data&&data.reps;
+  var wPH=(!hasWeight&&hint&&hint.weight)?hint.weight:'lb';
+  var rPH=(!hasReps&&hint&&hint.reps)?hint.reps:'reps';
+  var hintStyle=(!hasWeight&&hint&&hint.weight)?'color:var(--navy);font-weight:700;background:var(--navylt);border-color:rgba(26,39,68,.4)':'';
+  var hintStyleR=(!hasReps&&hint&&hint.reps)?'color:var(--navy);font-weight:700;background:var(--navylt);border-color:rgba(26,39,68,.4)':'';
   return'<div class="'+rowCls+'" id="setrow_'+exId+'_'+setKey+'">'
     +'<span class="set-type-tag '+tagCls+'">'+tag+'</span>'
     +'<div class="set-inputs">'
-    +'<input class="set-input" type="number" inputmode="decimal" placeholder="lb" value="'+(data&&data.weight?data.weight:'')+'" id="'+exId+'_'+setKey+'_w" onchange="p3.autoSave(\''+exId+'\',\''+setKey+'\')" step="2.5" min="0"'+(isSkipped?' disabled':'')+'>'    +'<span class="set-x">×</span>'
-    +'<input class="set-input" type="number" inputmode="numeric" placeholder="reps" value="'+(data&&data.reps?data.reps:'')+'" id="'+exId+'_'+setKey+'_r" onchange="p3.autoSave(\''+exId+'\',\''+setKey+'\')" min="0"'+(isSkipped?' disabled':'')+'>'    +'</div>'
-    +'<button class="skip-btn'+(isSkipped?' skipped':'')+'" onclick="p3.setSkip(\''+exId+'\',\''+setKey+'\')">'+( isSkipped?'Skipped':'Skip')+'</button>'
-    +'<div class="form-btns"'+(isSkipped?' style="opacity:.3;pointer-events:none"':'')+'>'    +'<button class="form-btn'+(formVal==='clean'?' selected-clean':'')+'" onclick="p3.setForm(\''+exId+'\',\''+setKey+'\',\'clean\')">Clean</button>'
+    +'<input class="set-input" type="number" inputmode="decimal" placeholder="'+wPH+'"'+(hintStyle?' style="'+hintStyle+'"':'')+' value="'+(hasWeight?data.weight:'')+'" id="'+exId+'_'+setKey+'_w" onchange="p3.autoSave(\''+exId+'\',\''+setKey+'\')" step="2.5" min="0"'+(isSkipped?' disabled':'')+'>'
+    +'<span class="set-x">×</span>'
+    +'<input class="set-input" type="number" inputmode="numeric" placeholder="'+rPH+'"'+(hintStyleR?' style="'+hintStyleR+'"':'')+' value="'+(hasReps?data.reps:'')+'" id="'+exId+'_'+setKey+'_r" onchange="p3.autoSave(\''+exId+'\',\''+setKey+'\')" min="0"'+(isSkipped?' disabled':'')+'>'
+    +'</div>'
+    +'<button class="skip-btn'+(isSkipped?' skipped':'')+'" onclick="p3.setSkip(\''+exId+'\',\''+setKey+'\')">'+(isSkipped?'Skipped':'Skip')+'</button>'
+    +'<div class="form-btns"'+(isSkipped?' style="opacity:.3;pointer-events:none"':'')+'>'
+    +'<button class="form-btn'+(formVal==='clean'?' selected-clean':'')+'" onclick="p3.setForm(\''+exId+'\',\''+setKey+'\',\'clean\')">Clean</button>'
     +'<button class="form-btn'+(formVal==='grind'?' selected-grind':'')+'" onclick="p3.setForm(\''+exId+'\',\''+setKey+'\',\'grind\')">Grind</button>'
     +'</div>'
     +'</div>';
 }
-
 function buildCardioCard(info,wk,day){
   var card=document.createElement('div');
   card.className='cardio-card';
