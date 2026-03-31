@@ -33,19 +33,22 @@ html, body {
 .scroll, .scroll-area { padding-bottom: calc(84px + env(safe-area-inset-bottom)) !important; }
 .bottom-nav {
   position:fixed; bottom:0; left:0; right:0; z-index:500;
-  background:var(--white); border-top:1px solid var(--rule);
+  background:var(--white); border-top:1.5px solid var(--rule2);
   display:flex; padding-bottom:env(safe-area-inset-bottom);
+  box-shadow:0 -2px 12px rgba(0,0,0,.06);
 }
 .bn-item {
   flex:1; display:flex; flex-direction:column; align-items:center;
-  padding:9px 4px 7px; cursor:pointer; -webkit-user-select:none; user-select:none; gap:3px;
+  padding:10px 4px 8px; cursor:pointer; -webkit-user-select:none; user-select:none; gap:4px;
+  position:relative; transition:background .15s;
 }
 .bn-item:active { opacity:.65; }
-.bn-icon { width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
-.bn-icon svg { width:18px; height:18px; fill:none; stroke:var(--t4); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; transition:stroke .15s; }
-.bn-label { font-size:9px; font-weight:400; color:var(--t4); letter-spacing:.05em; text-transform:uppercase; line-height:1; transition:color .15s; }
-.bn-item.active .bn-label { color:var(--navy); font-weight:500; }
-.bn-item.active .bn-icon svg { stroke:var(--navy); }
+.bn-icon { width:24px; height:24px; display:flex; align-items:center; justify-content:center; }
+.bn-icon svg { width:20px; height:20px; fill:none; stroke:var(--t3); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; transition:stroke .2s; }
+.bn-label { font-size:9.5px; font-weight:400; color:var(--t3); letter-spacing:.04em; text-transform:uppercase; line-height:1; transition:color .2s; }
+.bn-item.active .bn-label { color:var(--navy); font-weight:600; }
+.bn-item.active .bn-icon svg { stroke:var(--navy); stroke-width:2; }
+.bn-item.active::before { content:''; position:absolute; top:0; left:20%; right:20%; height:2px; background:var(--navy); border-radius:0 0 2px 2px; }
 
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -761,8 +764,8 @@ html,body{background:var(--white);color:var(--t1);font-family:'Inter',sans-serif
 .ex-header{padding:13px 15px 11px;display:flex;align-items:flex-start;justify-content:space-between;cursor:pointer;-webkit-user-select:none;user-select:none}
 .ex-header:active{background:var(--bg)}
 .ex-title-wrap{flex:1}
-.ex-name{font-size:14px;font-weight:500;color:var(--t1);line-height:1.2}
-.ex-rep-range{font-size:11px;color:var(--t3);margin-top:2px;font-weight:300;letter-spacing:.02em}
+.ex-name{font-size:15px;font-weight:600;color:var(--t1);line-height:1.2}
+.ex-rep-range{font-size:12px;color:var(--navy2);margin-top:4px;font-weight:500;letter-spacing:.02em;background:var(--navylt);display:inline-block;padding:2px 8px;border-radius:20px}
 .ex-status{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:10px;margin-top:1px}
 .ex-complete-badge{font-size:9px;font-weight:500;padding:2px 8px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase}
 .ex-badge-done{background:var(--lift-bg);color:var(--lift)}
@@ -798,17 +801,22 @@ html,body{background:var(--white);color:var(--t1);font-family:'Inter',sans-serif
 .last-week-label{font-size:9px;color:var(--t4);letter-spacing:.04em}
 .set-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--rule)}
 .set-row:last-child{border-bottom:none}
-.set-type-tag{font-size:9px;font-weight:500;padding:2px 7px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;min-width:28px;text-align:center}
-.tag-wu{background:var(--bg2);color:var(--t3)}
-.tag-ws{background:var(--navylt);color:var(--navy)}
+.set-type-tag{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;min-width:36px;text-align:center}
+.tag-wu{background:var(--bg2);color:var(--t2)}
+.tag-ws{background:var(--navy);color:var(--white)}
 .set-inputs{display:flex;align-items:center;gap:5px;flex:1}
-.set-input{width:58px;background:var(--bg);border:1px solid var(--rule2);border-radius:var(--rsm);padding:7px 8px;font-size:13px;color:var(--t1);text-align:center;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;-moz-appearance:textfield}
+.set-input{width:62px;background:var(--bg);border:1.5px solid var(--rule2);border-radius:var(--rsm);padding:8px 8px;font-size:14px;font-weight:500;color:var(--t1);text-align:center;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;-moz-appearance:textfield}
 .set-input::-webkit-outer-spin-button,.set-input::-webkit-inner-spin-button{-webkit-appearance:none}
 .set-input:focus{border-color:var(--navy)}
-.set-x{font-size:12px;color:var(--t4)}
+.set-x{font-size:13px;color:var(--t3);font-weight:500}
+.set-row.skipped{opacity:.45}
+.set-row.skipped .set-input{pointer-events:none;background:var(--bg2)}
+.skip-btn{font-size:9px;padding:3px 7px;border-radius:5px;cursor:pointer;border:1px solid var(--rule2);background:var(--white);color:var(--t3);font-family:'Inter',sans-serif;letter-spacing:.03em;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.skip-btn:active{transform:scale(.95)}
+.skip-btn.skipped{background:#faf6ed;border-color:rgba(181,146,42,.3);color:var(--warn);font-weight:500}
 .set-last-week{font-size:11px;color:var(--t4);white-space:nowrap;letter-spacing:.02em;flex-shrink:0}
 .form-btns{display:flex;gap:4px;flex-shrink:0}
-.form-btn{font-size:9px;padding:4px 6px;border-radius:5px;cursor:pointer;border:1px solid var(--rule2);background:var(--white);color:var(--t3);font-family:'Inter',sans-serif;letter-spacing:.03em;transition:all .15s;white-space:nowrap}
+.form-btn{font-size:10px;padding:5px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--rule2);background:var(--white);color:var(--t2);font-family:'Inter',sans-serif;letter-spacing:.03em;transition:all .15s;white-space:nowrap;font-weight:400}
 .form-btn:active{transform:scale(.95)}
 .form-btn.selected-clean{background:var(--lift-bg);border-color:rgba(61,138,90,0.3);color:var(--lift)}
 .form-btn.selected-off{background:var(--warn-bg);border-color:rgba(181,146,42,0.3);color:var(--warn)}
@@ -1241,6 +1249,32 @@ html,body{background:var(--white);color:var(--t1);font-family:'Inter',sans-serif
 @keyframes rise{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .card,.session-card,.phase-card,.ref-section{animation:rise .28s ease both}
 
+
+/* SESSION TIMER */
+.session-timer-bar{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:42px;background:var(--navylt);border-bottom:1px solid rgba(26,39,68,.1)}
+.st-label{font-size:9px;font-weight:500;color:var(--navy);letter-spacing:.1em;text-transform:uppercase}
+.st-clock{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--navy);letter-spacing:.04em;line-height:1}
+.st-done-btn{font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:var(--white);background:var(--navy);border:none;border-radius:20px;padding:5px 16px;cursor:pointer;letter-spacing:.04em;transition:all .15s}
+.st-done-btn:active{opacity:.8}
+.st-done-btn.completed{background:var(--green);color:var(--white)}
+
+/* REST TIMER POPUP */
+.rest-timer-popup{position:fixed;bottom:calc(60px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:400;background:var(--navy);border-radius:16px;padding:12px 20px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(0,0,0,.25);min-width:200px;justify-content:center;animation:slideUp .25s ease}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.rt-label{font-size:9px;font-weight:500;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.rt-clock{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--white);letter-spacing:.04em;line-height:1;min-width:64px;text-align:center}
+.rt-btns{display:flex;gap:6px}
+.rt-btn{font-family:'Inter',sans-serif;font-size:10px;font-weight:500;color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 10px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.rt-btn:active{opacity:.7}
+.rt-btn.rt-stop{color:var(--white);background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
+.rt-dismiss{color:rgba(255,255,255,.4);font-size:16px;cursor:pointer;padding:2px 4px;line-height:1;flex-shrink:0}
+
+/* SKIP BUTTON */
+.skip-btn{font-size:10px;padding:4px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--rule2);background:var(--white);color:var(--t3);font-family:'Inter',sans-serif;letter-spacing:.03em;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.skip-btn:active{transform:scale(.95)}
+.skip-btn.skipped{background:#faf6ed;border-color:rgba(181,146,42,.3);color:var(--amber);font-weight:600}
+.set-row.skipped{opacity:.4}
+.set-row.skipped .set-input{pointer-events:none}
 </style>
 </head>
 <body>
@@ -2344,7 +2378,10 @@ function persist(){try{localStorage.setItem('forge_p3',JSON.stringify(sv))}catch
 // ── STATE ─────────────────────────────────────────────────
 var programStartDate=sv.programStart?new Date(sv.programStart):null;
 var viewWeek=sv.currentWeek||1;
-var viewDay='mon';
+var _dowMap=['sun','mon','tue','wed','thu','fri','sat'];
+var viewDay=_dowMap[new Date().getDay()]||'mon';
+// If today is sun (rest day), default to mon
+if(viewDay==='sun') viewDay='mon';
 
 // If no start date set, prompt once
 if(!programStartDate){
@@ -2663,6 +2700,17 @@ function renderMain(){
   var info=DAYS[day];
   var isDeload=isDeloadWeek(wk);
 
+  // Session timer bar for lift days
+  if(info.type==='lift'){
+    autoStartTimerIfLiftDay();
+    var timerBar=document.createElement('div');
+    timerBar.className='session-timer-bar';
+    timerBar.innerHTML='<span class="st-label">Session</span>'
+      +'<span class="st-clock" id="sessionClock">'+fmtTime(getSessionElapsed())+'</span>'
+      +'<button class="st-done-btn'+(sessionCompleted?' completed':'')+'" id="sessionDoneBtn" onclick="p3.markWorkoutDone()">'+(sessionCompleted?'✓ Done':'Done')+'</button>';
+    ms.appendChild(timerBar);
+  }
+
   if(info.type==='rest'){
     ms.innerHTML='<div style="text-align:center;padding:40px 20px"><div style="font-family:Cormorant Garamond,serif;font-size:28px;color:var(--t4);font-style:italic;margin-bottom:10px">Rest</div><div style="font-size:13px;color:var(--t3);line-height:1.7;font-weight:300">Adaptation happens during recovery, not training.<br>Sleep 8–9 hours. Hit protein target.<br>Prep gear for Monday.</div></div>';
     renderFooter(ms);
@@ -2815,15 +2863,15 @@ var allDone=wuDone&&ws1Done&&ws2Done&&ws3Done2;
 function buildSetRow(exId,setKey,tag,data,isDeload){
   var tagCls=setKey==='wu'?'tag-wu':'tag-ws';
   var formVal=data?data.form:'';
-  return'<div class="set-row" id="setrow_'+exId+'_'+setKey+'">'
+  var isSkipped=data&&data.skipped;
+  var rowCls='set-row'+(isSkipped?' skipped':'');
+  return'<div class="'+rowCls+'" id="setrow_'+exId+'_'+setKey+'">'
     +'<span class="set-type-tag '+tagCls+'">'+tag+'</span>'
     +'<div class="set-inputs">'
-    +'<input class="set-input" type="number" inputmode="decimal" placeholder="lb" value="'+(data&&data.weight?data.weight:'')+'" id="'+exId+'_'+setKey+'_w" onchange="p3.autoSave(\''+exId+'\',\''+setKey+'\')" step="2.5" min="0">'
-    +'<span class="set-x">×</span>'
-    +'<input class="set-input" type="number" inputmode="numeric" placeholder="reps" value="'+(data&&data.reps?data.reps:'')+'" id="'+exId+'_'+setKey+'_r" onchange="p3.autoSave(\''+exId+'\',\''+setKey+'\')" min="0">'
-    +'</div>'
-    +'<div class="form-btns">'
-    +'<button class="form-btn'+(formVal==='clean'?' selected-clean':'')+'" onclick="p3.setForm(\''+exId+'\',\''+setKey+'\',\'clean\')">Clean</button>'
+    +'<input class="set-input" type="number" inputmode="decimal" placeholder="lb" value="'+(data&&data.weight?data.weight:'')+'" id="'+exId+'_'+setKey+'_w" onchange="p3.autoSave(\''+exId+'\',\''+setKey+'\')" step="2.5" min="0"'+(isSkipped?' disabled':'')+'>'    +'<span class="set-x">×</span>'
+    +'<input class="set-input" type="number" inputmode="numeric" placeholder="reps" value="'+(data&&data.reps?data.reps:'')+'" id="'+exId+'_'+setKey+'_r" onchange="p3.autoSave(\''+exId+'\',\''+setKey+'\')" min="0"'+(isSkipped?' disabled':'')+'>'    +'</div>'
+    +'<button class="skip-btn'+(isSkipped?' skipped':'')+'" onclick="p3.setSkip(\''+exId+'\',\''+setKey+'\')">'+( isSkipped?'Skipped':'Skip')+'</button>'
+    +'<div class="form-btns"'+(isSkipped?' style="opacity:.3;pointer-events:none"':'')+'>'    +'<button class="form-btn'+(formVal==='clean'?' selected-clean':'')+'" onclick="p3.setForm(\''+exId+'\',\''+setKey+'\',\'clean\')">Clean</button>'
     +'<button class="form-btn'+(formVal==='grind'?' selected-grind':'')+'" onclick="p3.setForm(\''+exId+'\',\''+setKey+'\',\'grind\')">Grind</button>'
     +'</div>'
     +'</div>';
@@ -3005,6 +3053,26 @@ function toggleRuck(){
   if(body)body.classList.toggle('open');
 }
 
+function setSkip(exId,setKey){
+  var sess=getSession(viewWeek,viewDay);
+  if(!sess[exId])sess[exId]={};
+  if(!sess[exId][setKey])sess[exId][setKey]={};
+  sess[exId][setKey].skipped=!sess[exId][setKey].skipped;
+  saveSession(viewWeek,viewDay,sess);
+  // Re-render just the set row
+  var row=document.getElementById('setrow_'+exId+'_'+setKey);
+  if(row){
+    var newRow=buildSetRow(exId,setKey,setKey.toUpperCase(),sess[exId][setKey],isDeloadWeek(viewWeek));
+    var tmp=document.createElement('div');tmp.innerHTML=newRow;
+    row.parentNode.replaceChild(tmp.firstChild,row);
+  }
+  updateExHeader(exId);
+  // Trigger rest timer after logging a working set
+  if(setKey!=='wu' && w.value && r.value){
+    startRestTimer();
+  }
+}
+
 function setForm(exId,setKey,form){
   var sess=getSession(viewWeek,viewDay);
   if(!sess[exId])sess[exId]={};
@@ -3142,17 +3210,173 @@ function saveAllAndSession(){
   if(note){note.classList.add('show');setTimeout(function(){note.classList.remove('show')},2200);}
 }
 
-function selectDay(day){viewDay=day;render()}
+function selectDay(day){viewDay=day;resetSessionTimer();render();autoStartTimerIfLiftDay();}
 function changeWeek(d){viewWeek=Math.max(1,Math.min(28,viewWeek+d));sv.currentWeek=viewWeek;persist();render()}
-function goCurrentWeek(){viewWeek=getCurrentWeek();sv.currentWeek=viewWeek;persist();render()}
+function goCurrentWeek(){
+  viewWeek=getCurrentWeek();
+  sv.currentWeek=viewWeek;
+  var _dm=['sun','mon','tue','wed','thu','fri','sat'];
+  viewDay=_dm[new Date().getDay()]||'mon';
+  if(viewDay==='sun')viewDay='mon';
+  persist();
+  renderTraining();
+  resetSessionTimer();
+  autoStartTimerIfLiftDay();
+}
+
+// ── SESSION TIMER ────────────────────────────────────────
+var sessionTimerInterval=null;
+var sessionStartTime=null;
+var sessionCompleted=false;
+
+function startSessionTimer(){
+  if(sessionTimerInterval)return; // already running
+  sessionStartTime=sessionStartTime||Date.now();
+  sessionTimerInterval=setInterval(function(){
+    updateSessionTimerDisplay();
+  },1000);
+}
+
+function stopSessionTimer(){
+  if(sessionTimerInterval){clearInterval(sessionTimerInterval);sessionTimerInterval=null;}
+}
+
+function resetSessionTimer(){
+  stopSessionTimer();
+  sessionStartTime=null;
+  sessionCompleted=false;
+  updateSessionTimerDisplay();
+}
+
+function getSessionElapsed(){
+  if(!sessionStartTime)return 0;
+  return Math.floor((Date.now()-sessionStartTime)/1000);
+}
+
+function fmtTime(secs){
+  var m=Math.floor(secs/60);
+  var s=secs%60;
+  return m+':'+(s<10?'0':'')+s;
+}
+
+function updateSessionTimerDisplay(){
+  var el=document.getElementById('sessionClock');
+  if(el)el.textContent=fmtTime(getSessionElapsed());
+}
+
+function markWorkoutDone(){
+  stopSessionTimer();
+  var elapsed=getSessionElapsed();
+  var mins=Math.round(elapsed/60);
+  sessionCompleted=true;
+
+  // Log session time
+  var sess=getSession(viewWeek,viewDay);
+  sess.completedAt=new Date().toISOString();
+  sess.durationMins=mins;
+  saveSession(viewWeek,viewDay,sess);
+
+  // Cross-write to Brief (forge_p2) — check gym NN and log workout
+  try{
+    var p2data={};
+    var raw=localStorage.getItem('forge_p2');
+    if(raw)p2data=JSON.parse(raw);
+    // Today's dateKey in same format as p2 fmtKey
+    var now=new Date();
+    var dk=now.getFullYear()+'-'+(now.getMonth()+1)+'-'+now.getDate();
+    // Check off gym non-negotiable (nn2)
+    p2data['nnd_'+dk+'_nn2']=true;
+    // Log workout completion
+    p2data['workout_done_'+dk]={mins:mins,week:viewWeek,day:viewDay,ts:new Date().toISOString()};
+    localStorage.setItem('forge_p2',JSON.stringify(p2data));
+  }catch(e){}
+
+  // Update done button
+  var btn=document.getElementById('sessionDoneBtn');
+  if(btn){btn.textContent='✓ Done — '+mins+' min';btn.classList.add('completed');}
+  var clock=document.getElementById('sessionClock');
+  if(clock)clock.textContent=fmtTime(elapsed);
+
+  // Show saved note
+  var note=document.getElementById('saveNote');
+  if(note){note.textContent='Workout complete — '+mins+' min logged';note.classList.add('show');setTimeout(function(){note.classList.remove('show')},3000);}
+}
+
+// ── REST TIMER ────────────────────────────────────────────
+var restTimerInterval=null;
+var restStartTime=null;
+var restPopupVisible=false;
+
+function startRestTimer(){
+  // Reset and start
+  restStartTime=Date.now();
+  restPopupVisible=true;
+  if(restTimerInterval)clearInterval(restTimerInterval);
+  restTimerInterval=setInterval(updateRestTimer,1000);
+  showRestPopup();
+}
+
+function stopRestTimer(){
+  if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}
+}
+
+function dismissRestTimer(){
+  stopRestTimer();
+  restPopupVisible=false;
+  var popup=document.getElementById('restTimerPopup');
+  if(popup)popup.remove();
+}
+
+function updateRestTimer(){
+  var el=document.getElementById('restClock');
+  if(!el){dismissRestTimer();return;}
+  var secs=Math.floor((Date.now()-restStartTime)/1000);
+  el.textContent=fmtTime(secs);
+}
+
+function showRestPopup(){
+  var existing=document.getElementById('restTimerPopup');
+  if(existing)existing.remove();
+  var popup=document.createElement('div');
+  popup.className='rest-timer-popup';
+  popup.id='restTimerPopup';
+  popup.innerHTML='<div><div class="rt-label">Rest</div><div class="rt-clock" id="restClock">0:00</div></div>'
+    +'<div class="rt-btns">'
+    +'<button class="rt-btn rt-stop" onclick="p3.stopRestTimer()">Stop</button>'
+    +'<button class="rt-btn" onclick="p3.startRestTimer()">Restart</button>'
+    +'</div>'
+    +'<span class="rt-dismiss" onclick="p3.dismissRestTimer()">×</span>';
+  document.body.appendChild(popup);
+}
+
+// Auto-start session timer when viewing a lift day
+function autoStartTimerIfLiftDay(){
+  var info=DAYS[viewDay];
+  if(info&&info.type==='lift'&&!sessionCompleted){
+    startSessionTimer();
+  } else {
+    stopSessionTimer();
+  }
+}
 
 // ── INIT ─────────────────────────────────────────────────
 viewWeek=getCurrentWeek();
+// Auto-select today's day
+var _initDow=['sun','mon','tue','wed','thu','fri','sat'];
+viewDay=_initDow[new Date().getDay()]||'mon';
+if(viewDay==='sun')viewDay='mon';
 render();
+autoStartTimerIfLiftDay();
 
 
   // Expose public API
   window.p3 = {
+    startRestTimer: (typeof startRestTimer==="function" ? startRestTimer : function(){}),
+    stopRestTimer: (typeof stopRestTimer==="function" ? stopRestTimer : function(){}),
+    startRestTimer: (typeof startRestTimer==="function" ? startRestTimer : function(){}),
+    dismissRestTimer: (typeof dismissRestTimer==="function" ? dismissRestTimer : function(){}),
+    markWorkoutDone: (typeof markWorkoutDone==="function" ? markWorkoutDone : function(){}),
+    setSkip: (typeof setSkip==="function" ? setSkip : function(){}),
     render: (typeof render==="function" ? render : function(){}),
     selectDay: (typeof selectDay==="function" ? selectDay : function(){}),
     changeWeek: (typeof changeWeek==="function" ? changeWeek : function(){}),
